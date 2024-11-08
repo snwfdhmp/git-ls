@@ -1,0 +1,18 @@
+{
+  "name": "git-ls",
+  "version": "1.0.0",
+  "description": "Aggregate git status of local repositories",
+  "author": "snwfdhmp",
+  "main": "main.js",
+  "bin": {
+    "git-ls": "./main.js"
+  },
+  "license": "ISC",
+  "type": "module",
+  "prettier": {
+    "semi": false
+  },
+  "dependencies": {
+    "colors": "^1.4.0"
+  }
+}
