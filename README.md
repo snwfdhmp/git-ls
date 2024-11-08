@@ -32,6 +32,12 @@ you can now do
 $ git ls
 ```
 
+update for latest features with
+
+```
+$ git ls --update
+```
+
 ## Usage
 
 ```
