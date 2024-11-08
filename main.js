@@ -434,7 +434,7 @@ const stateDisplayMode = {
     needsGitPullAndPush: "pull push",
     hasPendingChangesFromTrackedFiles: "add",
     needsGitCommit: "commit",
-    hasUntracked: "untracked",
+    hasUntracked: "track",
     joiner: " ",
   },
 }
