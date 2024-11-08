@@ -4,6 +4,7 @@ import fs from "fs"
 import _ from "colors"
 import child_process from "child_process"
 import util from "util"
+import { resolve } from "path"
 const execPromise = util.promisify(child_process.exec)
 
 const usage = `usage: gwd [options] [folder1] [folder2] [...]
@@ -13,6 +14,8 @@ options:
   -o, --only-git  Only show git repositories
   -q, --quiet  Do not show progress
 `
+
+const descriptorsHashMap = {}
 const main = async () => {
   const targets = []
   const folders = []
@@ -98,49 +101,43 @@ const main = async () => {
 
   // if is interactive
   const promises = []
-  const descriptors = []
+  let resolvedPromises = 0
 
-  // let showRemainingTimeout = null // #remaining-timeout
+  const callback = (d) => {
+    resolvedPromises++
+    if (descriptorsHashMap[d.name]) return
+    descriptorsHashMap[d.name] = d
 
-  // const waveLength = 5
-  // const waveDelay = 3000
-  // let waveIndex = 0
-  for (const folder of filteredFolders) {
+    if (!options.quiet) {
+      process.stdout.write("\r" + " ".repeat(longestFolderName + 16) + "\r")
+      process.stdout.write(
+        `\r (${Object.keys(descriptorsHashMap).length}/${
+          filteredFolders.length
+        }) ${d.timeEnd - d.timeStart}ms ${d.name} \r`
+      )
+    }
+  }
+  for (let i = 0; i < filteredFolders.length; i++) {
     promises.push(
-      makeDescriptor(folder, longestFolderName).then((d) => {
-        descriptors.push(d)
-
-        if (!options.quiet) {
-          // clearTimeout(showRemainingTimeout) // #remaining-timeout
-          process.stdout.write("\r" + " ".repeat(longestFolderName + 16) + "\r")
-          process.stdout.write(
-            `\r (${descriptors.length}/${filteredFolders.length}) ${
-              d.timeEnd - d.timeStart
-            }ms ${d.name} \r`
-          )
-
-          // #remaining-timeout
-          // showRemainingTimeout = setTimeout(() => {
-          //   const missing = filteredFolders.filter(
-          //     (e) => !descriptors.find((d) => d.name === e)
-          //   )
-          //   process.stdout.write(
-          //     "\r" + " ".repeat(longestFolderName + 16) + "\r"
-          //   )
-          //   console.log(`waiting for: ${missing.join(" ")}`)
-          // }, 3000)
-        }
-      })
+      makeDescriptor(filteredFolders[i], longestFolderName).then(callback)
     )
-
-    // waveIndex++
-    // if (waveIndex > waveLength) {
-    //   waveIndex = 0
-    //   await waitMs(waveDelay)
-    // }
   }
 
-  await Promise.all(promises)
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
+  // reverse order
+  for (let i = filteredFolders.length - 1; i >= 0; i--) {
+    promises.push(
+      makeDescriptor(filteredFolders[i], longestFolderName).then(callback)
+    )
+  }
+
+  // wait for all promises to resolve
+  while (Object.keys(descriptorsHashMap).length < filteredFolders.length) {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
+
+  const descriptors = Object.values(descriptorsHashMap)
 
   // clearTimeout(showRemainingTimeout) // #remaining-timeout
   if (!options.quiet)
@@ -295,20 +292,21 @@ const makeDescriptor = async (folder, longestFolderName) => {
   } catch {}
   d.needsGitPull = false
   try {
-    const attemptsMax = 4
+    const attemptsMax = 10
     let attempts = attemptsMax
     while (attempts > 0) {
+      if (descriptorsHashMap[folder]) throw new Error("cancelled")
       try {
         const result = await execPromise(
           `git -C ${folder} fetch -q && git -C ${folder} log ..@{u}`,
-          { timeout: 2000 + (attemptsMax - attempts) * 1000 }
+          { timeout: 2000 + (attemptsMax - attempts) * 500 }
         )
         d.needsGitPull = result.stdout.trim().length > 0
         break
       } catch (err) {
         attempts--
         if (attempts === 0) throw err
-        await new Promise((resolve) => setTimeout(resolve, 200))
+        await new Promise((resolve) => setTimeout(resolve, 500))
       }
     }
   } catch {}
@@ -319,16 +317,22 @@ const makeDescriptor = async (folder, longestFolderName) => {
     d.isInMergeState = true
   } catch {}
 
-  d.stateDisplay = ""
+  d.stateDisplayParts = []
 
-  // state, pos 1
-  if (d.needsGitPull && d.needsGitPush) d.stateDisplay += "↕"
-  else if (d.needsGitPush) d.stateDisplay += "⇡"
-  else if (d.needsGitPull) d.stateDisplay += "⇣"
+  // readability
+  const ds = d.stateDisplayParts
+  const s = stateDisplaySymbol
 
-  if (d.hasPendingChangesFromTrackedFiles) d.stateDisplay += "!"
-  if (d.needsGitCommit) d.stateDisplay += "+"
-  if (d.hasUntracked) d.stateDisplay += "?"
+  if (d.needsGitPull && d.needsGitPush) ds.push(s.needsGitPullAndPush)
+  else if (d.needsGitPush) ds.push(s.needsGitPush)
+  else if (d.needsGitPull) ds.push(s.needsGitPull)
+
+  if (d.hasPendingChangesFromTrackedFiles)
+    ds.push(s.hasPendingChangesFromTrackedFiles)
+  if (d.needsGitCommit) ds.push(s.needsGitCommit)
+  if (d.hasUntracked) ds.push(s.hasUntracked)
+
+  d.stateDisplay = ds.join(STATE_JOINER)
 
   if (d.stateDisplay.length > 0) d.stateDisplay = `[${d.stateDisplay}]`
 
@@ -339,3 +343,25 @@ const makeDescriptor = async (folder, longestFolderName) => {
 }
 
 main()
+
+// Method 1: symbol config
+// const stateDisplaySymbol = {
+//   needsGitPull: "⇣",
+//   needsGitPush: "⇡",
+//   needsGitPullAndPush: "↕",
+//   hasPendingChangesFromTrackedFiles: "!",
+//   needsGitCommit: "+",
+//   hasUntracked: "?",
+// }
+// const STATE_JOINER = ""
+
+// Method 2: text config
+const stateDisplaySymbol = {
+  needsGitPull: "pull",
+  needsGitPush: "push",
+  needsGitPullAndPush: "pull push",
+  hasPendingChangesFromTrackedFiles: "add",
+  needsGitCommit: "commit",
+  hasUntracked: "untracked",
+}
+const STATE_JOINER = " "
