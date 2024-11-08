@@ -199,6 +199,19 @@ const padEndName = (key, string) => {
   return string.padEnd(getLongestName(key), " ")
 }
 
+let cmdTimes = {}
+const cmdTimeStart = (key) => {
+  cmdTimes[key] = Date.now()
+}
+const cmdTimeEnd = (key) => {
+  if (!cmdTimes[key]) return
+  const time = Date.now() - cmdTimes[key]
+  delete cmdTimes[key]
+  if (options.verbose)
+    console.log(`time: ${time.toString().padStart(8)}ms ${key}`)
+  return time
+}
+
 const makeDescriptor = async (folder, longestFolderName) => {
   const d = {
     timeStart: Date.now(),
@@ -255,7 +268,6 @@ const makeDescriptor = async (folder, longestFolderName) => {
   ).stdout.trim()
   setLongestName("branch", d.branch)
 
-  if (options.verbose) console.log(`git -C ${folder} status --porcelain`)
   d.isDirty =
     (await execPromise(`git -C ${folder} status --porcelain`)).stdout.trim()
       .length > 0
@@ -267,38 +279,43 @@ const makeDescriptor = async (folder, longestFolderName) => {
     setLongestName("remoteOriginUrl", d.remoteOriginUrl)
   } catch {}
 
-  if (options.verbose)
-    console.log(`git -C ${folder} ls-files --others --exclude-standard`)
+  cmdTimeStart(`hasUntracked ${folder}`)
   d.hasUntracked = (
     await execPromise(`git -C ${folder} ls-files --others --exclude-standard`)
   ).stdout.trim().length
+  cmdTimeEnd(`hasUntracked ${folder}`)
 
   d.hasPendingChangesFromTrackedFiles = false
   try {
+    cmdTimeStart(`hasPendingChangesFromTrackedFiles ${folder}`)
     d.hasPendingChangesFromTrackedFiles =
       (await execPromise(`git -C ${folder} diff --name-only`)).stdout.trim()
         .length > 0
   } catch {}
+  cmdTimeEnd(`hasPendingChangesFromTrackedFiles ${folder}`)
 
   d.needsGitCommit = false
   try {
-    if (options.verbose)
-      console.log(`git -C ${folder} diff --staged --name-only`)
+    cmdTimeStart(`needsGitCommit ${folder}`)
     d.needsGitCommit =
       (
         await execPromise(`git -C ${folder} diff --staged --name-only`)
       ).stdout.trim().length > 0
   } catch {}
+  cmdTimeEnd(`needsGitCommit ${folder}`)
 
   d.needsGitPush = false
   try {
+    cmdTimeStart(`needsGitPush ${folder}`)
     d.needsGitPush =
       (await execPromise(`git -C ${folder} log @{u}..`)).stdout.trim().length >
       0
   } catch {}
+  cmdTimeEnd(`needsGitPush ${folder}`)
 
   d.needsGitPull = false
   if (d.remoteOriginUrl) {
+    cmdTimeStart(`needsGitPull ${folder}`)
     try {
       const attemptsMax = 10
       let attempts = attemptsMax
@@ -319,6 +336,7 @@ const makeDescriptor = async (folder, longestFolderName) => {
       }
     } catch {}
   }
+  cmdTimeEnd(`needsGitPull ${folder}`)
 
   d.isInMergeState = false
   try {
