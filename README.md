@@ -22,6 +22,7 @@ then
 
 ```
 cd git-ls
+npm i
 chmod u+x git-ls
 git config --global alias.ls "\!$(pwd)/git-ls"
 ```
