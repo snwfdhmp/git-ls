@@ -7,7 +7,7 @@ import util from "util"
 import { resolve } from "path"
 const execPromise = util.promisify(child_process.exec)
 
-const usage = `usage: git-ls [options] [folder1] [folder2] [...]
+const usage = `usage: git-ls [options] [/path/to/parent1] [/path/to/parent2] [...]
 
 options:
   -h, --help      Show this help message and exit
