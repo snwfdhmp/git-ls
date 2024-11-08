@@ -4,14 +4,14 @@
 
 ## Install
 
-**⚠️ Requires node.** [Tutorial here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+**⚠️ Requires node.** [How to install node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
-**Using npm (recommended)**
+**Method 1: using npm (recommended)**
 
 `npm i -g git-ls`
 
 or
 
-**Using npx (supported)**
+**Method 2: using npx (supported)**
 
 `npx git-ls`
