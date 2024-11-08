@@ -2,6 +2,8 @@
 
 ![git-ls demo](https://i.imgur.com/672nita.png)
 
+![git-ls demo2](https://i.imgur.com/PJLFUGO.png)
+
 ## Install
 
 **⚠️ Requires node.** [How to install node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
