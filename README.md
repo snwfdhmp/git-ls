@@ -53,3 +53,15 @@ options:
   --update        Upgrade git-ls with latest version
   --upgrade       Alias for --update
 ```
+
+## More information
+
+### Status meaning
+
+| status | meaning                                                           |
+| ------ | ----------------------------------------------------------------- |
+| pull   | New commits available on remote for this branch                   |
+| push   | You have commits to push (ahead from remote)                      |
+| add    | You have changes to add (on tracked files)                        |
+| commit | You have staging changes (you git-added something without commit) |
+| track  | You have untracked files (need to git-add or git-ignore)          |
