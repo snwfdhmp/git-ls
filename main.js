@@ -385,7 +385,9 @@ const doUpdate = async () => {
     console.log(pullResult.stdout.trim())
 
     try {
-      const npmResult = await execPromise(`npm install`, { cwd: __dirname })
+      const npmResult = await execPromise(`npm install  --no-audit`, {
+        cwd: __dirname,
+      })
       console.log(npmResult.stdout.trim())
     } catch (e) {
       console.log("npm install failed with following message:")
