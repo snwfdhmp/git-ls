@@ -402,12 +402,12 @@ const doUpdate = async () => {
     ).stdout.trim()
 
     if (currentRef !== getNewRef) {
-      console.log(`git-ls: updated from ${currentRef} to ${getNewRef}`)
+      console.log(`git-ls: updated from ${currentRef} to ${getNewRef}`.green)
     }
 
     return
   } catch (e) {
-    console.log("Update failed with following message:")
+    console.log("Update failed with following message:".red)
     console.error(e)
   }
 }
