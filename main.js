@@ -15,6 +15,7 @@ options:
   -s, --short     Use ⇣⇡↕!+? symbols for status
   -i, --ignore    Only repo with status flags
   -q, --quiet     Do not show progress
+  -v, --verbose   Show verbose output
   --update        Upgrade git-ls with latest version
   --upgrade       Alias for --update
 `
@@ -26,6 +27,7 @@ const options = {
   quiet: !isInteractive,
   shortStatusDisplay: false,
   onlyWithStatus: false,
+  verbose: false,
 }
 
 const main = async () => {
@@ -53,6 +55,8 @@ const main = async () => {
           options.onlyWithStatus = true
         } else if (arg === "--short") {
           options.shortStatusDisplay = true
+        } else if (arg === "--verbose") {
+          options.verbose = true
         } else if (arg === "--update" || arg === "--upgrade") {
           await doUpdate()
           process.exit(0)
@@ -71,6 +75,8 @@ const main = async () => {
             options.quiet = true
           } else if (opt === "s") {
             options.shortStatusDisplay = true
+          } else if (opt === "v") {
+            options.verbose = true
           } else if (opt === "i") {
             options.onlyWithStatus = true
           } else {
@@ -249,6 +255,7 @@ const makeDescriptor = async (folder, longestFolderName) => {
   ).stdout.trim()
   setLongestName("branch", d.branch)
 
+  if (options.verbose) console.log(`git -C ${folder} status --porcelain`)
   d.isDirty =
     (await execPromise(`git -C ${folder} status --porcelain`)).stdout.trim()
       .length > 0
@@ -260,30 +267,8 @@ const makeDescriptor = async (folder, longestFolderName) => {
     setLongestName("remoteOriginUrl", d.remoteOriginUrl)
   } catch {}
 
-  /*
-    # Vérifie s'il y a des fichiers non suivis
-    hasUntracked() {
-        [[ -n "$(git ls-files --others --exclude-standard)" ]]
-    }
-
-    # Vérifie s'il y a des modifications en attente dans les fichiers suivis
-    hasPendingChangesFromTrackedFiles() {
-        ! git diff --quiet || ! git diff --cached --quiet
-    }
-
-    # Vérifie s'il y a des changements stagés qui nécessitent un commit
-    needsGitCommit() { git diff --cached --quiet || echo $?; }
-
-    # Vérifie s'il y a des commits locaux qui n'ont pas été poussés
-    needsGitPush() { [ -n "$(git log @{u}.. 2>/dev/null)" ]; }
-
-    # Vérifie s'il y a des commits distants à récupérer
-    needsGitPull() { git fetch -q && [ -n "$(git log ..@{u} 2>/dev/null)" ]; }
-
-    # Vérifie si on est dans un état de merge (conflit ou en cours)
-    isInMergeState() { [ -f "$(git rev-parse --git-dir)/MERGE_HEAD" ]; }
-  */
-
+  if (options.verbose)
+    console.log(`git -C ${folder} ls-files --others --exclude-standard`)
   d.hasUntracked = (
     await execPromise(`git -C ${folder} ls-files --others --exclude-standard`)
   ).stdout.trim().length
@@ -297,6 +282,8 @@ const makeDescriptor = async (folder, longestFolderName) => {
 
   d.needsGitCommit = false
   try {
+    if (options.verbose)
+      console.log(`git -C ${folder} diff --staged --name-only`)
     d.needsGitCommit =
       (
         await execPromise(`git -C ${folder} diff --staged --name-only`)
