@@ -21,22 +21,21 @@ $ git clone https://github.com/snwfdhmp/git-ls.git
 then
 
 ```
-$ cd git-ls
-$ chmod u+x git-ls
+cd git-ls
+chmod u+x git-ls
+git config --global alias.ls "\!$(pwd)/git-ls"
 ```
 
-then add this directory to your path
+you can now do
 
 ```
-$ export PATH="$PATH:/path/to/this/repo"
-```
-
-(optionnal) add as git alias
-
-```
-$ git config --global alias.ls '!git-ls'
-# you can now do
 $ git ls
+```
+
+(optionnal) add it to your PATH
+
+```
+export PATH="$PATH:/path/to/this/repo"
 ```
 
 ## Usage
