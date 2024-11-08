@@ -1,7 +1,5 @@
 # git-ls: list local git repos and their status
 
-⭐️ Leave a start to support !
-
 ## Basic usage
 
 ![git-ls demo](https://i.imgur.com/O3ch0xq.png)
@@ -81,6 +79,6 @@ Put the alias command in your .profile
 
 # Contributing
 
-⭐️ Leave a start to support !
+⭐️ Leaving a star is a great way to support !
 
-PR/Issues are open
+📭 PR/Issues are open. Send your PR or your feature request
