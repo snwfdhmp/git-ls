@@ -13,27 +13,36 @@
 **⚠️ Requires node.** [How to install node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm). Tested on Node v18+ (might work for earlier versions)
 
 ```
-git clone git@github.com:snwfdhmp/git-ls.git
+$ git clone git@github.com:snwfdhmp/git-ls.git
 # or
-git clone https://github.com/snwfdhmp/git-ls.git
+$ git clone https://github.com/snwfdhmp/git-ls.git
 ```
 
 then
 
 ```
-cd git-ls
-chmod u+x git-ls
+$ cd git-ls
+$ chmod u+x git-ls
 ```
 
 then add this directory to your path
 
 ```
-export PATH="$PATH:/path/to/this/repo"
+$ export PATH="$PATH:/path/to/this/repo"
+```
+
+(optionnal) add as git alias
+
+```
+$ git config --global alias.ls '!git-ls'
+# you can now do
+$ git ls
 ```
 
 ## Usage
 
 ```
+
 usage: git-ls [options] [folder1] [folder2] [...]
 
 options:
@@ -42,4 +51,9 @@ options:
 -s, --short Use ⇣⇡↕!+? symbols for status
 -i, --ignore Only repo with status flags
 -q, --quiet Do not show progress
+
+```
+
+```
+
 ```
