@@ -377,7 +377,9 @@ const doUpdate = async () => {
     // get current ref
     const currentRef = (
       await execPromise(`git -C "${__dirname}" rev-parse HEAD`)
-    ).stdout.trim()
+    ).stdout
+      .trim()
+      .slice(0, 7)
 
     const pullResult = await execPromise(
       `git -C "${__dirname}" pull origin master --ff-only`
@@ -399,7 +401,9 @@ const doUpdate = async () => {
 
     const getNewRef = (
       await execPromise(`git -C "${__dirname}" rev-parse HEAD`)
-    ).stdout.trim()
+    ).stdout
+      .trim()
+      .slice(0, 7)
 
     if (currentRef !== getNewRef) {
       console.log(`git-ls: updated from ${currentRef} to ${getNewRef}`.green)
