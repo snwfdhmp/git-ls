@@ -81,7 +81,7 @@ Put the alias command in your .profile
 
 Since the project is relatively new, the API is not stable yet. Use it in scripts at your own risk.
 
-If you plan on using this in script, open an issue and i'll provide a stable and greppable API.
+If you plan on using this in script, open an issue and i'll provide a stable and grep-able API.
 
 # Contributing
 
