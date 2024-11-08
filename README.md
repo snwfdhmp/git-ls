@@ -1,5 +1,7 @@
 # git-ls: list local git repos and their status
 
+⭐️ Leave a start to support !
+
 ## Basic usage
 
 ![git-ls demo](https://i.imgur.com/O3ch0xq.png)
