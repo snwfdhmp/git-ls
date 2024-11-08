@@ -32,17 +32,11 @@ you can now do
 $ git ls
 ```
 
-(optionnal) add it to your PATH
-
-```
-export PATH="$PATH:/path/to/this/repo"
-```
-
 ## Usage
 
 ```
 
-usage: git-ls [options] [folder1] [folder2] [...]
+usage: git ls [options] [folder1] [folder2] [...]
 
 options:
 -h, --help Show this help message and exit
