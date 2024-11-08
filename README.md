@@ -77,6 +77,12 @@ $ watch_my_git
 
 Put the alias command in your .profile
 
+## Using it in production
+
+Since the project is relatively new, the API is not stable yet. Use it in scripts at your own risk.
+
+If you plan on using this in script, open an issue and i'll provide a stable and greppable API.
+
 # Contributing
 
 ⭐️ Leaving a star helps a lot !
