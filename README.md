@@ -2,11 +2,11 @@
 
 ## Basic usage
 
-![git-ls demo](https://i.imgur.com/672nita.png)
+![git-ls demo](https://i.imgur.com/O3ch0xq.png)
 
 ## More options
 
-![git-ls demo2](https://i.imgur.com/PJLFUGO.png)
+![git-ls demo2](https://i.imgur.com/Mu4yG5b.png)
 
 ## Install
 
