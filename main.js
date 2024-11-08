@@ -309,26 +309,29 @@ const makeDescriptor = async (folder, longestFolderName) => {
       (await execPromise(`git -C ${folder} log @{u}..`)).stdout.trim().length >
       0
   } catch {}
+
   d.needsGitPull = false
-  try {
-    const attemptsMax = 10
-    let attempts = attemptsMax
-    while (attempts > 0) {
-      if (descriptorsHashMap[folder]) throw new Error("cancelled")
-      try {
-        const result = await execPromise(
-          `git -C ${folder} fetch -q && git -C ${folder} log ..@{u}`,
-          { timeout: 2000 + (attemptsMax - attempts) * 500 }
-        )
-        d.needsGitPull = result.stdout.trim().length > 0
-        break
-      } catch (err) {
-        attempts--
-        if (attempts === 0) throw err
-        await new Promise((resolve) => setTimeout(resolve, 500))
+  if (d.remoteOriginUrl) {
+    try {
+      const attemptsMax = 10
+      let attempts = attemptsMax
+      while (attempts > 0) {
+        if (descriptorsHashMap[folder]) throw new Error("cancelled")
+        try {
+          const result = await execPromise(
+            `git -C ${folder} fetch -q && git -C ${folder} log ..@{u}`,
+            { timeout: 2000 + (attemptsMax - attempts) * 500 }
+          )
+          d.needsGitPull = result.stdout.trim().length > 0
+          break
+        } catch (err) {
+          attempts--
+          if (attempts === 0) throw err
+          await new Promise((resolve) => setTimeout(resolve, 500))
+        }
       }
-    }
-  } catch {}
+    } catch {}
+  }
 
   d.isInMergeState = false
   try {
