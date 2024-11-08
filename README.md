@@ -27,6 +27,10 @@ chmod u+x git-ls
 
 then add this directory to your path
 
+```
+export PATH="$PATH:/path/to/this/repo"
+```
+
 ## Usage
 
 ```
