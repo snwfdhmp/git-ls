@@ -76,3 +76,9 @@ $ watch_my_git
 ```
 
 Put the alias command in your .profile
+
+# Contributing
+
+⭐️ Leave a start to support !
+
+PR/Issues are open
