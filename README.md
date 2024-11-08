@@ -35,18 +35,12 @@ $ git ls
 ## Usage
 
 ```
-
 usage: git ls [options] [folder1] [folder2] [...]
 
 options:
--h, --help Show this help message and exit
--o, --only-git Only show git repositories
--s, --short Use ⇣⇡↕!+? symbols for status
--i, --ignore Only repo with status flags
--q, --quiet Do not show progress
-
-```
-
-```
-
+  -h, --help      Show this help message and exit
+  -o, --only-git  Only show git repositories
+  -s, --short     Use ⇣⇡↕!+? symbols for status
+  -i, --ignore    Only repo with status flags
+  -q, --quiet     Do not show progress
 ```
