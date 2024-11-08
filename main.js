@@ -15,6 +15,8 @@ options:
   -s, --short     Use ⇣⇡↕!+? symbols for status
   -i, --ignore    Only repo with status flags
   -q, --quiet     Do not show progress
+  --update        Upgrade git-ls with latest version
+  --upgrade       Alias for --update
 `
 
 const isInteractive = process.stdout.isTTY
@@ -51,6 +53,9 @@ const main = async () => {
           options.onlyWithStatus = true
         } else if (arg === "--short") {
           options.shortStatusDisplay = true
+        } else if (arg === "--update" || arg === "--upgrade") {
+          await doUpdate()
+          process.exit(0)
         } else {
           console.error(`Unknown option: ${arg}`)
           console.log(usage)
@@ -354,6 +359,36 @@ const makeDescriptor = async (folder, longestFolderName) => {
 
   d.timeEnd = Date.now()
   return d
+}
+
+// __dirname__ for ESM
+const __dirname__ = new URL(".", import.meta.url).pathname
+const doUpdate = async () => {
+  // fetch master from remote and count commits
+  try {
+    // get current ref
+    const currentRef = (
+      await execPromise(`git -C "${__dirname__}" rev-parse HEAD`)
+    ).stdout.trim()
+
+    const pullResult = await execPromise(
+      `git -C "${__dirname__}" pull origin master --ff-only`
+    )
+    console.log(pullResult.stdout.trim())
+
+    const getNewRef = (
+      await execPromise(`git -C "${__dirname__}" rev-parse HEAD`)
+    ).stdout.trim()
+
+    if (currentRef !== getNewRef) {
+      console.log(`git-ls: updated from ${currentRef} to ${getNewRef}`)
+    }
+
+    return
+  } catch (e) {
+    console.log("Update failed with following message:")
+    console.error(e)
+  }
 }
 
 main()

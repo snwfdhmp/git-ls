@@ -35,7 +35,7 @@ $ git ls
 ## Usage
 
 ```
-usage: git ls [options] [/path/to/parent1] [/path/to/parent2] [...]
+usage: git-ls [options] [/path/to/parent1] [/path/to/parent2] [...]
 
 options:
   -h, --help      Show this help message and exit
@@ -43,4 +43,6 @@ options:
   -s, --short     Use ⇣⇡↕!+? symbols for status
   -i, --ignore    Only repo with status flags
   -q, --quiet     Do not show progress
+  --update        Upgrade git-ls with latest version
+  --upgrade       Alias for --update
 ```
