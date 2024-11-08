@@ -369,23 +369,33 @@ const makeDescriptor = async (folder, longestFolderName) => {
   return d
 }
 
-// __dirname__ for ESM
-const __dirname__ = new URL(".", import.meta.url).pathname
+// __dirname for ESM
+const __dirname = new URL(".", import.meta.url).pathname
 const doUpdate = async () => {
   // fetch master from remote and count commits
   try {
     // get current ref
     const currentRef = (
-      await execPromise(`git -C "${__dirname__}" rev-parse HEAD`)
+      await execPromise(`git -C "${__dirname}" rev-parse HEAD`)
     ).stdout.trim()
 
     const pullResult = await execPromise(
-      `git -C "${__dirname__}" pull origin master --ff-only`
+      `git -C "${__dirname}" pull origin master --ff-only`
     )
     console.log(pullResult.stdout.trim())
 
+    try {
+      await execPromise(`npm install`, { cwd: __dirname })
+    } catch (e) {
+      console.log("npm install failed with following message:")
+      console.error(e)
+      console.log(
+        `-----\n\nYou might want to run "npm install" manually (cd ${__dirname}; npm install)`
+      )
+    }
+
     const getNewRef = (
-      await execPromise(`git -C "${__dirname__}" rev-parse HEAD`)
+      await execPromise(`git -C "${__dirname}" rev-parse HEAD`)
     ).stdout.trim()
 
     if (currentRef !== getNewRef) {
