@@ -374,6 +374,18 @@ const __dirname = new URL(".", import.meta.url).pathname
 const doUpdate = async () => {
   // fetch master from remote and count commits
   try {
+    try {
+      await fetch("https://numbers.snwfdhmp.com/counter", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          key: "counters.git-ls.update-requested",
+        }),
+      })
+    } catch {}
+
     // get current ref
     const currentRef = (
       await execPromise(`git -C "${__dirname}" rev-parse HEAD`)
