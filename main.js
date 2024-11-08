@@ -382,13 +382,13 @@ const doUpdate = async () => {
     const pullResult = await execPromise(
       `git -C "${__dirname}" pull origin master --ff-only`
     )
-    console.log("git", pullResult.stdout.trim())
+    console.log("git:", pullResult.stdout.trim())
 
     try {
       const npmResult = await execPromise(`npm install  --no-audit`, {
         cwd: __dirname,
       })
-      console.log("npm", npmResult.stdout.trim())
+      console.log("npm:", npmResult.stdout.trim())
     } catch (e) {
       console.log("npm install failed with following message:")
       console.error(e)
