@@ -79,6 +79,6 @@ Put the alias command in your .profile
 
 # Contributing
 
-⭐️ Leaving a star is a great way to support !
+⭐️ Leaving a star helps a lot !
 
 📭 PR/Issues are open. Send your PR or your feature request
