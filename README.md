@@ -12,12 +12,36 @@
 
 **⚠️ Requires node.** [How to install node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
-**Method 1: using npm (recommended)**
+```
+git clone git@github.com:snwfdhmp/git-ls.git
+# or
+git clone https://github.com/snwfdhmp/git-ls.git
+```
 
-`npm i -g git-ls`
+then
 
-or
+```
+cd git-ls
+chmod u+x git-ls
+```
 
-**Method 2: using npx (supported)**
+then add this directory to your path
 
-`npx git-ls`
+## Usage
+
+```
+
+usage: git-ls [options] [folder1] [folder2] [...]
+
+options:
+-h, --help Show this help message and exit
+-o, --only-git Only show git repositories
+-s, --short Use ⇣⇡↕!+? symbols for status
+-i, --ignore Only repo with status flags
+-q, --quiet Do not show progress
+
+```
+
+```
+
+```
