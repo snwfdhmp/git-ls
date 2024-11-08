@@ -7,26 +7,30 @@ import util from "util"
 import { resolve } from "path"
 const execPromise = util.promisify(child_process.exec)
 
-const usage = `usage: gwd [options] [folder1] [folder2] [...]
+const usage = `usage: git-ls [options] [folder1] [folder2] [...]
 
 options:
-  -h, --help  Show this help message and exit
+  -h, --help      Show this help message and exit
   -o, --only-git  Only show git repositories
-  -q, --quiet  Do not show progress
+  -s, --short     Use ⇣⇡↕!+? symbols for status
+  -i, --ignore    Only repo with status flags
+  -q, --quiet     Do not show progress
 `
 
+const isInteractive = process.stdout.isTTY
 const descriptorsHashMap = {}
+const options = {
+  onlyGit: false,
+  quiet: !isInteractive,
+  shortStatusDisplay: false,
+  onlyWithStatus: false,
+}
+
 const main = async () => {
   const targets = []
   const folders = []
   const filteredFolders = []
   const args = process.argv.slice(2)
-
-  const isInteractive = process.stdout.isTTY
-  const options = {
-    onlyGit: false,
-    quiet: !isInteractive,
-  }
 
   // parse args. First parse options, then when first arg without - or -- is found, parse folders. Allow for multiple -oqetc to be combined
   let parametersEnded = false
@@ -43,6 +47,10 @@ const main = async () => {
           options.onlyGit = true
         } else if (arg === "--quiet") {
           options.quiet = true
+        } else if (arg === "--ignore") {
+          options.onlyWithStatus = true
+        } else if (arg === "--short") {
+          options.shortStatusDisplay = true
         } else {
           console.error(`Unknown option: ${arg}`)
           console.log(usage)
@@ -56,6 +64,10 @@ const main = async () => {
             options.onlyGit = true
           } else if (opt === "q") {
             options.quiet = true
+          } else if (opt === "s") {
+            options.shortStatusDisplay = true
+          } else if (opt === "i") {
+            options.onlyWithStatus = true
           } else {
             console.error(`Unknown option: -${opt}`)
             console.log(usage)
@@ -152,6 +164,8 @@ const main = async () => {
 
   for (const descriptor of descriptors) {
     if (options.onlyGit && !descriptor.isGit) continue
+    if (options.onlyWithStatus && descriptor.stateDisplayParts.length === 0)
+      continue
     console.log(descriptor.toString())
   }
 }
@@ -321,7 +335,7 @@ const makeDescriptor = async (folder, longestFolderName) => {
 
   // readability
   const ds = d.stateDisplayParts
-  const s = stateDisplaySymbol
+  const s = stateDisplayMode[options.shortStatusDisplay ? "short" : "full"]
 
   if (d.needsGitPull && d.needsGitPush) ds.push(s.needsGitPullAndPush)
   else if (d.needsGitPush) ds.push(s.needsGitPush)
@@ -332,7 +346,7 @@ const makeDescriptor = async (folder, longestFolderName) => {
   if (d.needsGitCommit) ds.push(s.needsGitCommit)
   if (d.hasUntracked) ds.push(s.hasUntracked)
 
-  d.stateDisplay = ds.join(STATE_JOINER)
+  d.stateDisplay = ds.join(s.joiner)
 
   if (d.stateDisplay.length > 0) d.stateDisplay = `[${d.stateDisplay}]`
 
@@ -344,24 +358,23 @@ const makeDescriptor = async (folder, longestFolderName) => {
 
 main()
 
-// Method 1: symbol config
-// const stateDisplaySymbol = {
-//   needsGitPull: "⇣",
-//   needsGitPush: "⇡",
-//   needsGitPullAndPush: "↕",
-//   hasPendingChangesFromTrackedFiles: "!",
-//   needsGitCommit: "+",
-//   hasUntracked: "?",
-// }
-// const STATE_JOINER = ""
-
-// Method 2: text config
-const stateDisplaySymbol = {
-  needsGitPull: "pull",
-  needsGitPush: "push",
-  needsGitPullAndPush: "pull push",
-  hasPendingChangesFromTrackedFiles: "add",
-  needsGitCommit: "commit",
-  hasUntracked: "untracked",
+const stateDisplayMode = {
+  short: {
+    needsGitPull: "⇣",
+    needsGitPush: "⇡",
+    needsGitPullAndPush: "↕",
+    hasPendingChangesFromTrackedFiles: "!",
+    needsGitCommit: "+",
+    hasUntracked: "?",
+    joiner: "",
+  },
+  full: {
+    needsGitPull: "pull",
+    needsGitPush: "push",
+    needsGitPullAndPush: "pull push",
+    hasPendingChangesFromTrackedFiles: "add",
+    needsGitCommit: "commit",
+    hasUntracked: "untracked",
+    joiner: " ",
+  },
 }
-const STATE_JOINER = " "
