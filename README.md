@@ -45,7 +45,3 @@ options:
 -q, --quiet Do not show progress
 
 ```
-
-```
-
-```
