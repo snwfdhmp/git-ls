@@ -1,4 +1,4 @@
-# git-ls: list directories and show git status
+# git-ls: list local git repos and their status
 
 ## Basic usage
 
@@ -35,7 +35,7 @@ $ git ls
 ## Usage
 
 ```
-usage: git ls [options] [folder1] [folder2] [...]
+usage: git ls [options] [/path/to/parent1] [/path/to/parent2] [...]
 
 options:
   -h, --help      Show this help message and exit
