@@ -34,7 +34,6 @@ export PATH="$PATH:/path/to/this/repo"
 ## Usage
 
 ```
-
 usage: git-ls [options] [folder1] [folder2] [...]
 
 options:
