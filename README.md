@@ -54,7 +54,7 @@ options:
   --upgrade       Alias for --update
 ```
 
-## More information
+## FAQ
 
 ### Status meaning
 
@@ -65,3 +65,14 @@ options:
 | add    | You have changes to add (on tracked files)                        |
 | commit | You have staging changes (you git-added something without commit) |
 | track  | You have untracked files (need to git-add or git-ignore)          |
+
+### How to watch all my local parent folders ?
+
+Create an alias
+
+```
+$ alias watch_my_git_parent="git ls -o /home/mygit /another/path /yet/another"
+$ watch_my_git
+```
+
+Put the alias command in your .profile
