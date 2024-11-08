@@ -4,9 +4,7 @@
 
 ## Install
 
-### 1. Install node. [Tutorial here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-
-### 2. Install `git-ls`.
+**⚠️ Requires node.** [Tutorial here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 **Using npm (recommended)**
 
