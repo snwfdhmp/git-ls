@@ -10,7 +10,7 @@
 
 ## Install
 
-**⚠️ Requires node.** [How to install node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+**⚠️ Requires node.** [How to install node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm). Tested on Node v18+ (might work for earlier versions)
 
 ```
 git clone git@github.com:snwfdhmp/git-ls.git
