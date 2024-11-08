@@ -44,7 +44,7 @@ $ git ls --update
 ## Usage
 
 ```
-usage: git-ls [options] [/path/to/parent1] [/path/to/parent2] [...]
+usage: git ls [options] [/path/to/parent1] [/path/to/parent2] [...]
 
 options:
   -h, --help      Show this help message and exit
