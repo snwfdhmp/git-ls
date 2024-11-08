@@ -43,5 +43,4 @@ options:
 -s, --short Use ⇣⇡↕!+? symbols for status
 -i, --ignore Only repo with status flags
 -q, --quiet Do not show progress
-
 ```
