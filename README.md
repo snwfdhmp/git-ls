@@ -1,12 +1,12 @@
 # git-ls: list directories and show git status
 
-# Display mode: full
-
-![git-ls demo2](https://i.imgur.com/PJLFUGO.png)
-
-# Display mode: symbols
+## Basic usage
 
 ![git-ls demo](https://i.imgur.com/672nita.png)
+
+## More options
+
+![git-ls demo2](https://i.imgur.com/PJLFUGO.png)
 
 ## Install
 
