@@ -29,6 +29,7 @@ const options = {
   onlyWithStatus: false,
   verbose: false,
 }
+let longestFolderName = 0
 
 const main = async () => {
   const targets = []
@@ -117,7 +118,7 @@ const main = async () => {
     filteredFolders.push(...targetFilteredFolders)
   }
 
-  const longestFolderName =
+  longestFolderName =
     filteredFolders.reduce((acc, folder) => {
       return folder.length > acc.length ? folder : acc
     }, "").length || 0
@@ -141,18 +142,14 @@ const main = async () => {
     }
   }
   for (let i = 0; i < filteredFolders.length; i++) {
-    promises.push(
-      makeDescriptor(filteredFolders[i], longestFolderName).then(callback)
-    )
+    promises.push(makeDescriptor(filteredFolders[i]).then(callback))
   }
 
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   // reverse order
   for (let i = filteredFolders.length - 1; i >= 0; i--) {
-    promises.push(
-      makeDescriptor(filteredFolders[i], longestFolderName).then(callback)
-    )
+    promises.push(makeDescriptor(filteredFolders[i]).then(callback))
   }
 
   // wait for all promises to resolve
@@ -160,7 +157,13 @@ const main = async () => {
     await new Promise((resolve) => setTimeout(resolve, 100))
   }
 
-  const descriptors = Object.values(descriptorsHashMap)
+  const descriptors = Object.values(descriptorsHashMap).filter((e) => {
+    if (options.onlyWithStatus && e.stateDisplayParts.length === 0) return false
+    if (options.onlyGit && !e.isGit) return false
+
+    setLongestName("folder", e.name)
+    return true
+  })
 
   // clearTimeout(showRemainingTimeout) // #remaining-timeout
   if (!options.quiet)
@@ -174,9 +177,6 @@ const main = async () => {
   })
 
   for (const descriptor of descriptors) {
-    if (options.onlyGit && !descriptor.isGit) continue
-    if (options.onlyWithStatus && descriptor.stateDisplayParts.length === 0)
-      continue
     console.log(descriptor.toString())
   }
 }
@@ -195,8 +195,8 @@ const getLongestName = (key) => {
   return longestName[key] || 0
 }
 
-const padEndName = (key, string) => {
-  return string.padEnd(getLongestName(key), " ")
+const padEndName = (key, string, noPaddedStringModifier = (e) => e) => {
+  return noPaddedStringModifier(string).padEnd(getLongestName(key), " ")
 }
 
 let cmdTimes = {}
@@ -212,43 +212,54 @@ const cmdTimeEnd = (key) => {
   return time
 }
 
-const makeDescriptor = async (folder, longestFolderName) => {
+const makeDescriptor = async (folder) => {
   const d = {
     timeStart: Date.now(),
     name: folder,
-    nameDisplay: folder.padEnd(longestFolderName, " "),
 
     toString() {
+      this.nameDisplay = padEndName("folder", this.name)
+
       if (!d.isGit)
         return (
           this.nameDisplay.gray.italic + " not-a-git-repository".gray.italic
         )
 
-      let branchPart = padEndName("branch", this.branch)
-      if (this.isDirty) {
-        branchPart = branchPart.cyan
+      let namePart = this.nameDisplay
+      if (this.stateDisplayParts.length <= 0) {
+        namePart = namePart.blue
       } else {
-        branchPart = branchPart.gray
+        namePart = namePart.yellow.bold
+      }
+
+      let branchPart = padEndName("branch", this.branch)
+      if (this.stateDisplayParts.length > 0) {
+        branchPart = branchPart.yellow.bold
+      } else {
+        branchPart = branchPart.blue
       }
 
       let statePart = padEndName("stateDisplay", this.stateDisplay)
       if (this.stateDisplay.length > 0) {
-        statePart = statePart.red
+        statePart = statePart.yellow.bold
       }
 
       let originPart = padEndName(
         "remoteOriginUrl",
         !this.remoteOriginUrl ? "no-remote" : this.remoteOriginUrl
       )
+
       if (!this.remoteOriginUrl) {
-        originPart = originPart.yellow
+        originPart = originPart.red
       } else if (this.needsGitPull) {
-        originPart = originPart.white
+        originPart = originPart.yellow.bold
+      } else if (this.stateDisplayParts.length > 0) {
+        originPart = originPart.blue
       } else {
-        originPart = originPart.gray
+        originPart = originPart.blue
       }
 
-      return `${this.nameDisplay} ${branchPart} ${statePart} ${originPart}`
+      return `${namePart} ${branchPart} ${statePart} ${originPart}`
     },
   }
 
